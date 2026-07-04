@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Smart Skincare Recommender{% endblock %}
+{% block progress %}{% endblock %}
+
+{% block content %}
+<div class="home-bg">
+  <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80" alt="skincare"/>
+</div>
+<div class="home-content">
+  <p class="home-welcome">Welcome</p>
+  <h1 class="home-h1">Smart<br/>Skincare</h1>
+  <span class="home-italic">Recommender</span>
+  <p class="home-tagline">"Let's get you clear skin"</p>
+  <a href="{{ url_for('choice') }}" class="btn btn-primary" style="max-width:340px;">
+    Start Journey
+  </a>
+</div>
+{% endblock %}

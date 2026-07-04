@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Analyzing...{% endblock %}
+{% block prog_width %}75%{% endblock %}
+
+{% block content %}
+<div class="shell">
+  <div class="load-wrap">
+    <div class="spin-ring">
+      <div class="spin-inner">✦</div>
+    </div>
+    <p class="load-title" id="load-text">Analyzing your skin...</p>
+    <p class="load-sub">Detecting concerns and matching ingredients</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const msgs = [
+  "Analyzing your skin...",
+  "Detecting skin tone...",
+  "Identifying concerns...",
+  "Matching ingredients...",
+  "Building your routine...",
+];
+let i = 0;
+const el = document.getElementById('load-text');
+setInterval(() => {
+  i = (i+1) % msgs.length;
+  el.style.opacity = 0;
+  setTimeout(() => { el.textContent = msgs[i]; el.style.transition='opacity .4s'; el.style.opacity=1; }, 300);
+}, 700);
+setTimeout(() => {
+  fetch('/analyze')
+    .then(() => { window.location.href = '/result'; })
+    .catch(() => { window.location.href = '/result'; });
+}, 2800);
+</script>
+{% endblock %}

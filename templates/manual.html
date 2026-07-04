@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Your Skin Concerns{% endblock %}
+{% block prog_width %}50%{% endblock %}
+
+{% block content %}
+<div class="shell" style="align-items:flex-start;padding-left:28px;padding-right:28px;">
+  <div style="width:100%;max-width:420px;margin:0 auto;">
+    <h2 class="page-title" style="text-align:left;font-size:clamp(1.7rem,5vw,2.1rem);margin-bottom:10px;">
+      What is your skin type?
+    </h2>
+    <p class="page-sub" style="text-align:left;margin-bottom:28px;">
+      Select your skin type and concerns to get the best routine.
+    </p>
+
+    <form action="{{ url_for('manual_select') }}" method="POST">
+      <!-- Skin Type — 3 options -->
+      <p style="font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin-bottom:12px;">Your Skin Type</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;">
+        {% for val, icon in [('Oily','🫧'),('Dry','🌵'),('Normal','✨')] %}
+        <div class="skin-opt">
+          <input type="radio" name="skin_type" id="st-{{val}}" value="{{val}}" {{ 'checked' if prefill_skin==val }}>
+          <label for="st-{{val}}">
+            <span class="ico">{{icon}}</span>{{val}}
+          </label>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Concerns -->
+      <p style="font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin-bottom:12px;">Skin Concerns</p>
+      <div class="concern-list">
+        {% for concern in concerns %}
+        <label class="concern-row" style="animation-delay:{{loop.index*0.05}}s;">
+          <input type="checkbox" name="concerns" value="{{concern}}" {{ 'checked' if concern in prefill_concerns }}>
+          <span class="concern-row-label">{{concern}}</span>
+          <span class="toggle-circle"></span>
+        </label>
+        {% endfor %}
+      </div>
+
+      <div style="height:20px;"></div>
+      <button type="submit" class="btn btn-ghost" style="max-width:100%;">Continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

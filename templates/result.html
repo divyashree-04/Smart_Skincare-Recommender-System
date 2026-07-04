@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Our Analysis{% endblock %}
+{% block prog_width %}85%{% endblock %}
+
+{% block content %}
+<div class="shell">
+  <h2 class="page-title">Our Analysis</h2>
+  <p class="page-sub">Here's what we found based on your photo.</p>
+
+  <div class="analysis-card">
+    <!-- Skin Type -->
+    <div class="eyebrow">
+      <span>{{ skin_icon }}</span> Skin Type
+    </div>
+    <div class="skin-val">{{ skin_type }}</div>
+
+    <!-- Confidence bar -->
+    {% if source == 'model' %}
+    <div style="margin-top:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:.75rem;color:var(--text-gray);">Confidence</span>
+        <span style="font-size:.75rem;font-weight:600;color:var(--purple);">{{ confidence }}%</span>
+      </div>
+      <div style="height:6px;background:#f3e5f5;border-radius:100px;overflow:hidden;">
+        <div style="height:100%;width:{{ confidence }}%;background:linear-gradient(90deg,#f48fb1,#ce93d8);border-radius:100px;transition:width 1s ease;"></div>
+      </div>
+    </div>
+
+    <!-- All probabilities -->
+    <div style="margin-top:16px;">
+      {% for st, prob in all_probs.items() %}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:.8rem;width:70px;color:var(--text-dk);font-weight:{{ '600' if st == skin_type else '400' }};">{{ st }}</span>
+        <div style="flex:1;height:5px;background:#f3e5f5;border-radius:100px;overflow:hidden;">
+          <div style="height:100%;width:{{ (prob*100)|round(1) }}%;background:{% if st == skin_type %}linear-gradient(90deg,#f48fb1,#ce93d8){% else %}#e0d0ef{% endif %};border-radius:100px;"></div>
+        </div>
+        <span style="font-size:.75rem;color:var(--text-gray);width:40px;text-align:right;">{{ (prob*100)|round(1) }}%</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="divider"></div>
+
+    <!-- Detected Concerns -->
+    <div class="eyebrow">
+      <span>⚠️</span> Detected Concerns
+    </div>
+    <div class="concern-pills">
+      {% for c in concerns %}
+      <span class="concern-pill">{{ c }}</span>
+      {% endfor %}
+    </div>
+
+    {% if source == 'demo' %}
+    <p style="font-size:.75rem;color:var(--text-gray);margin-top:14px;font-style:italic;">
+      ℹ️ Demo mode — train the model for real AI predictions
+    </p>
+    {% endif %}
+  </div>
+
+  <p class="is-correct">Is this correct?</p>
+
+  <form action="{{ url_for('confirm_result') }}" method="POST" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;">
+    <button type="submit" name="accurate" value="yes" class="btn btn-primary">
+      Yes, looks right!
+    </button>
+    <button type="submit" name="accurate" value="no" class="btn-adjust">
+      ↺ &nbsp;No, let me adjust
+    </button>
+  </form>
+</div>
+{% endblock %}

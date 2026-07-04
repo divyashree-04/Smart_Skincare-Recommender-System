@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Your Routine{% endblock %}
+{% block prog_width %}100%{% endblock %}
+
+{% block content %}
+<div class="recs-shell">
+  <p class="recs-eyebrow">Your Custom Match</p>
+  <h2 class="recs-title">Personalized<br/>Skincare Routine</h2>
+
+  <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.7);border-radius:100px;padding:10px 20px;margin-bottom:32px;box-shadow:0 2px 12px rgba(123,63,160,.1);">
+    <span>{{ skin_icon }}</span>
+    <span style="font-size:.9rem;font-weight:600;color:var(--purple-md);">{{ skin_type }} Skin</span>
+    {% if concerns %}
+    <span style="color:var(--text-gray);font-size:.8rem;">· {{ concerns | join(', ') }}</span>
+    {% endif %}
+  </div>
+
+  {% set counter = namespace(n=0) %}
+  <div class="prod-list">
+    {% for cat, products in recommendations.items() %}
+      {% for product in products %}
+        {% set counter.n = counter.n + 1 %}
+        <div class="prod-card" style="animation-delay:{{ loop.index * 0.08 }}s;">
+          <img
+            src="{{ product.product_pic }}"
+            alt="{{ product.Product }}"
+            class="prod-img"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+          />
+          <div class="prod-img-placeholder" style="display:none;">{{ cat_icons.get(cat,'🌿') }}</div>
+          <div class="prod-body">
+            <p class="prod-cat">{{ cat }}</p>
+            <p class="prod-name">{{ product.Product }}</p>
+            <p class="prod-desc">{{ product.Concern | replace('|',' · ') }}</p>
+            <a href="{{ product.product_url }}" target="_blank" class="prod-link">Buy Now &rarr;</a>
+          </div>
+          <div class="prod-num">{{ counter.n }}</div>
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <a href="{{ url_for('index') }}" class="restart">← Start over</a>
+</div>
+{% endblock %}

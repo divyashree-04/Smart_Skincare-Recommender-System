@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Know Your Skin{% endblock %}
+{% block prog_width %}25%{% endblock %}
+
+{% block content %}
+<div class="shell">
+  <div class="choice-wrap">
+    <div class="circle-img">
+      <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80" alt="skincare"/>
+    </div>
+    <h2 class="page-title">Do you know your<br/>skin type?</h2>
+    <div class="btn-stack" style="margin-top:32px;">
+      <a href="{{ url_for('manual_select') }}" class="btn btn-white">Yes, I do</a>
+      <a href="{{ url_for('upload') }}" class="btn btn-primary">No, help me find out</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

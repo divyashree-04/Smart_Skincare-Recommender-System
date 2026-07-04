@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Analyze My Skin{% endblock %}
+{% block prog_width %}50%{% endblock %}
+
+{% block content %}
+<div class="shell">
+  <h2 class="page-title">Let's take a look</h2>
+  <p class="page-sub">A bare-faced selfie gives us the best results.</p>
+
+  <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" id="upload-form">
+    <div class="upload-grid">
+      <div class="upload-card" id="cam-card">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <p class="upload-label">Click Photo</p>
+      </div>
+      <div class="upload-card">
+        <input type="file" name="skin_image" id="skin-file" accept="image/*"/>
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+        </div>
+        <p class="upload-label">Upload<br/>Photo</p>
+      </div>
+    </div>
+
+    <div id="cam-section" style="display:none;width:100%;max-width:420px;margin-bottom:20px;">
+      <div style="border-radius:16px;overflow:hidden;background:#f3e5f5;">
+        <video id="webcam-preview" autoplay playsinline style="width:100%;display:block;transform:scaleX(-1);"></video>
+        <img id="captured-img" style="width:100%;display:none;" alt="captured"/>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:12px;justify-content:center;">
+        <button type="button" id="capture-btn" class="btn btn-white" style="max-width:160px;padding:12px;">📸 Capture</button>
+        <button type="button" id="retake-btn" class="btn btn-ghost" style="display:none;max-width:160px;padding:12px;">🔄 Retake</button>
+      </div>
+    </div>
+
+    <div id="preview-strip" style="display:none;width:100%;max-width:420px;margin-bottom:20px;">
+      <img src="" alt="preview" style="width:100%;border-radius:16px;max-height:200px;object-fit:cover;"/>
+    </div>
+
+    <input type="hidden" name="webcam_data" id="webcam-data" value=""/>
+    <button type="submit" id="analyze-btn" class="btn btn-ghost" style="max-width:380px;">Analyze My Skin</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('cam-card').addEventListener('click', async function() {
+  const sec = document.getElementById('cam-section');
+  sec.style.display = 'block';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+    document.getElementById('webcam-preview').srcObject = stream;
+    window._stream = stream;
+  } catch(e) { alert('Camera denied. Please upload instead.'); sec.style.display='none'; }
+});
+document.getElementById('capture-btn').addEventListener('click', function() {
+  const vid = document.getElementById('webcam-preview');
+  const c = document.createElement('canvas');
+  c.width = vid.videoWidth; c.height = vid.videoHeight;
+  const ctx = c.getContext('2d');
+  ctx.scale(-1,1); ctx.drawImage(vid,-c.width,0);
+  const data = c.toDataURL('image/jpeg',0.9);
+  document.getElementById('webcam-data').value = data;
+  document.getElementById('captured-img').src = data;
+  document.getElementById('captured-img').style.display = 'block';
+  vid.style.display = 'none';
+  document.getElementById('capture-btn').style.display = 'none';
+  document.getElementById('retake-btn').style.display = 'inline-flex';
+  if(window._stream) window._stream.getTracks().forEach(t=>t.stop());
+});
+document.getElementById('retake-btn').addEventListener('click', async function() {
+  document.getElementById('captured-img').style.display='none';
+  document.getElementById('webcam-preview').style.display='block';
+  document.getElementById('capture-btn').style.display='inline-flex';
+  this.style.display='none';
+  document.getElementById('webcam-data').value='';
+  const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+  document.getElementById('webcam-preview').srcObject = stream;
+  window._stream = stream;
+});
+document.getElementById('skin-file').addEventListener('change', function() {
+  if(this.files[0]){
+    const r = new FileReader();
+    r.onload = e => {
+      const s = document.getElementById('preview-strip');
+      s.querySelector('img').src = e.target.result;
+      s.style.display = 'block';
+    };
+    r.readAsDataURL(this.files[0]);
+  }
+});
+document.getElementById('upload-form').addEventListener('submit', function(e) {
+  const file = document.getElementById('skin-file').files.length;
+  const cam  = document.getElementById('webcam-data').value;
+  if(!file && !cam){ e.preventDefault(); alert('Please upload or capture a photo first!'); return; }
+  document.getElementById('analyze-btn').textContent = 'Uploading...';
+});
+</script>
+{% endblock %}
